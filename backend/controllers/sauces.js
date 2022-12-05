@@ -1,15 +1,18 @@
 const Sauce = require('../models/sauce');
 
 exports.createSauce = (req, res, next) => {
-  const sauceObject = JSON.parse(req.body.thing);
+  const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id;
   delete sauceObject._userId;
   const sauce = new Sauce({
       ...sauceObject,
-      userId: req.auth.userId,
+      sauce: req.body.sauce,
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
-
+  sauce.like = 0;
+  sauce.dislike = 0;
+  sauce.userLike= 0;
+  sauce.userDislike= 0;
   sauce.save()
   .then(() => { res.status(201).json({message: 'Sauce enregistrée !'})})
   .catch(error => { res.status(400).json( { error })})
@@ -26,7 +29,7 @@ exports.modifySauce = (req, res, next) => {
   Sauce.findOne({_id: req.params.id})
       .then((sauce) => {
           if (sauce.userId != req.auth.userId) {
-              res.status(401).json({ message : 'Not authorized'});
+              res.status(403).json({ message : 'unauthorized request'});
           } else {
               Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
               .then(() => res.status(200).json({message : 'Sauce modifiée!'}))

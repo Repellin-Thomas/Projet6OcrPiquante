@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
 const saucesRoutes = require('./routes/sauces');
-const userRoutes = require('./routes/user')
-
+const userRoutes = require('./routes/user');
+const path = require('path');
 
 mongoose.connect('mongodb+srv://Toto38:Toto3838@cluster0.quopaa6.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -24,6 +24,6 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
   app.use('/api/sauces', saucesRoutes);
   app.use('/api/auth', userRoutes)
-  
+  app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
