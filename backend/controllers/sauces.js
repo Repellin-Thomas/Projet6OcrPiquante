@@ -9,8 +9,8 @@ exports.createSauce = (req, res, next) => {
     sauce: req.body.sauce,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
-  sauce.like = 0;
-  sauce.dislike = 0;
+  sauce.likes = 0;
+  sauce.dislikes = 0;
   sauce.userLike = [""];
   sauce.userDislike = [""];
   sauce.save()
@@ -73,7 +73,6 @@ exports.likeSauce = (req, res, next) => {
 
     removeItemFromList(sauceObject.usersLiked, userId);
     removeItemFromList(sauceObject.usersDisliked, userId);
-
     console.log(sauceObject);
     if (userLike === 1) {
       sauceObject.usersLiked.push(userId);
@@ -83,15 +82,14 @@ exports.likeSauce = (req, res, next) => {
       sauceObject.usersDisliked.push(userId);
     }
 
-    sauceObject.dislike = sauceObject.usersDisliked.length;
-    sauceObject.like = sauceObject.usersLiked.length;
+    sauceObject.dislikes = sauceObject.usersDisliked.length;
+    sauceObject.likes = sauceObject.usersLiked.length;
 
     Sauce.updateOne({ _id: req.params.id }, sauceObject)
-      .then(() => res.status(200).json({ message: "Bien marché" }))
+      .then(() => res.status(200).json({ message: "Avis pris en compte" }))
       .catch(error => res.status(401).json({ error }));
 
 
   })
     .catch(error => { res.status(400).json({ error }) });
-
 };
